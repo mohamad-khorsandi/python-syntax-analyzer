@@ -1,0 +1,31 @@
+<smp_stmt>::= <assign> | <call>
+SemanticRule:child.level=parent.level
+<assign>::= <name> <s?> "=" <s?> <expr>
+<expr>::= <term> "+" <expr> | <term> "-" <expr> | <term>
+<term>::=
+    <factor> "*" <term>
+| <factor> "/" <term>
+| <factor> "//" <term>
+| <factor> "%" <term>
+| <factor>
+<factor>::= <operand> "**" <operand> | <operand>
+
+<operand>::= <call> | <num> | <name> | <literal>
+
+<call>::= <name> "(" <args> ")"
+
+<args>::=
+<s?> <expr> <s?> "," <args>
+| <s?> <expr> <s?>
+| ""
+
+<literal>::=
+"'" <literal_inside> "'"
+| """ <literal_inside> """
+
+<literal_inside>::=
+<alpha> <literal_inside>
+| <digit> <literal_inside>
+| <alpha>
+| <digit>
+

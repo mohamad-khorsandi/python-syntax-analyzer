@@ -1,0 +1,9 @@
+<file>::= <stmts> <s> <eof>
+SemanticRule:child.level=parent.level
+
+<stmts>::= <indent> <stmt> <lf> <stmts> | <indent> <stmt>
+SemanticRule:child.level=parent.level
+
+<stmt>::= <cmp_stmt> | <smp_stmt>
+SemanticRule:child.level=parent.level
+
