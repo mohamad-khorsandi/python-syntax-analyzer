@@ -1,78 +1,38 @@
 package syntax_analyzer;
 
-import enums.Predicate;
-import enums.SemanticRule;
-import grammer.Rule;
-import grammer.RuleItem;
-import enums.Type;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import static syntax_analyzer.Main.trace;
-import static syntax_analyzer.Result.res;
 
-public class NonTerminal extends Consumer {
-    protected NonTerminal(String name, NonTerminal parent) {
+public class NonTerminal extends Variable {
+    static String pattern = "<.*?>";
+    public String name;
+    public ArrayList<Clause> rule = new ArrayList<>();
+
+    public NonTerminal(String name) {
         this.name = name;
-        if (parent == null) {
-            this.level = 0;
-        } else {
-            SemanticRule.execute(parent.rule.semanticRule, parent, this);
-        }
-        this.rule = findRule();
     }
 
-    private final String name;
-    public int level;
-    private final Rule rule;
+    public void setRule(String str) {
+        var clauseStr = str.split("\\|");
+        for (var s : clauseStr){
+            rule.add(new Clause(s));
+        }
+    }
 
     @Override
     public Result consume(String text, int index) throws Exception {
         trace.add(this);
-        int maxConsumed = 0;
-        for (ArrayList<RuleItem> OrClause : rule.second) {
-            Result res = this.consumeItemSequence(OrClause, index, text);
+        for (Clause clause : this.rule) {
+            Result res = clause.consume(text, index);
 
-            if (res.suc) {
-                trace.pop();
+            if (res.suc)
                 return res;
-            }
-
-            if (maxConsumed < res.consumed)
-                maxConsumed = res.consumed;
         }
 
         trace.pop();
-        return res(false, maxConsumed);
-    }
-
-    private Result consumeItemSequence(ArrayList<RuleItem> sequence, int index, String text) throws Exception {
-
-        int consumed = 0;
-        for (RuleItem item : sequence) {
-            Result itemRes = res(false, 0);
-
-            if (item.type.equals(Type.TERMINAL)) {
-                itemRes = new Terminal(item.str).consume(text, index+consumed);
-            } else if (item.type.equals(Type.NON_TERMINAL)) {
-                itemRes = new NonTerminal(item.str, this).consume(text, index+consumed);
-            }
-
-            if (!itemRes.suc)
-                return res(false, consumed+itemRes.consumed);
-
-            consumed += itemRes.consumed;
-        }
-
-        return new Result(true, consumed);
-    }
-
-    private Rule findRule() {
-        return Main.grammar.rules.stream()
-                .filter(rule -> rule.first.equals(this.name))
-                .filter(rule -> Predicate.execute(rule.predicate, this))
-                .findFirst().orElseThrow(() -> new RuntimeException("there is no rule for this non terminal: " + name));
+        return Result.res(false, 0);
     }
 
     @Override

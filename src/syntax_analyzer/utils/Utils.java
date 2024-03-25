@@ -5,58 +5,40 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedList;
-
+import java.util.StringTokenizer;
 
 public class Utils {
 
-    static public String readFile(String fileName, boolean print) {
-        String inputString = null;
-        try {
-            inputString = Files.readString(Paths.get(fileName));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        String[] lines = inputString.split("\n");
-        StringBuilder result = new StringBuilder();
-        for (String line : lines) {
-            String trimmedLine = line.replaceAll("\\s+$", "");
-            if (!trimmedLine.isEmpty()) {
-                result.append(trimmedLine).append("\n");
-            }
-        }
+    static public String readFile(String fileName, boolean print) throws IOException {
 
-        String resultString = result.toString().stripTrailing();
-        resultString = resultString.replaceAll("(?<=\\S) +(?!\\n|$| )", " ");
+        String text = new String(Files.readAllBytes(Paths.get(fileName)));
+        //remove comments
+//        String resultString = text.replaceAll( "//.*$", "" );
+        String resultString = text.replaceAll( "//.*|(\"(?:\\\\[^\"]|\\\\\"|.)*?\")|(?s)/\\*.*?\\*/", "$1 " );
+        resultString = resultString.replaceAll("\\s+", " ");
+//        resultString = resultString + "EOF";
+
         if (print) {
-            System.out.println("preprocessing result: -----------");
-            System.out.println(resultString);
-            System.out.println("---------------------------------\n");
+            printTokens(resultString);
         }
         return resultString;
+    }
+
+    static private void printTokens(String tokens) {
+        System.out.println("preprocessing result: -----------");
+        System.out.println(tokens);
+        System.out.println("---------------------------------\n");
     }
 
     public static void report(String code, int index) {
         if (index < 0) {
             throw new RuntimeException("Index out of range!");
-        } else if (index >= code.length()) {
+        } else if (index > code.length()) {
             throw new RuntimeException("Index out of range!");
         }
-
-        String[] lines = code.split("\n", -1);
-        int counter = 0;
-        int currentIndex = 0;
-        for (String line : lines) {
-            counter++;
-            int lineLength = line.length() + 1;
-            if (currentIndex + lineLength > index) {
-                System.out.println("error in line: " + counter);
-                System.out.println(line);
-                System.out.println(" ".repeat(index - currentIndex) + "^");
-                return;
-            }
-            currentIndex += lineLength;
-        }
-
-        throw new RuntimeException("Line not found!");
+        int a = Integer.max(0, index-10);
+        int b = Integer.min(code.length(), index+10);
+        System.out.println(code.substring(a, b));
+        System.out.println(" ".repeat(index) + "^");
     }
 }

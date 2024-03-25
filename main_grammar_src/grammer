@@ -1,0 +1,35 @@
+<java_program> ::= <class_declaration>
+
+<class_declaration> ::= "class" <identifier> "{" <class_body> "}"
+
+<class_body> ::= <class_member> | <class_body> <class_member>
+
+<class_member> ::= <method_declaration> | <field_declaration>
+
+<method_declaration> ::= <type> <identifier> "(" <parameters_list> ")" "{" <statements> "}"
+
+<field_declaration> ::= <type> <identifier> ";"
+
+<parameters_list> ::= <parameter> | <parameters_list> "," <parameter>
+
+<parameter> ::= <type> <identifier>
+
+<statements> ::= <statement> | <statements> <statement>
+
+<statement> ::= <assignment_statement> | <if_statement> | <while_statement> | <method_call> | ";"
+
+<assignment_statement> ::= <identifier> "=" <expression> ";"
+
+<if_statement> ::= "if" "(" <expression> ")" "{" <statements> "}"
+                 | "if" "(" <expression> ")" "{" <statements> "}" "else" "{" <statements> "}"
+
+<while_statement> ::= "while" "(" <expression> ")" "{" <statements> "}"
+
+<method_call> ::= <identifier> "(" <arguments_list> ")" ";"
+
+<arguments_list> ::= <expression> | <arguments_list> "," <expression>
+
+
+
+
+

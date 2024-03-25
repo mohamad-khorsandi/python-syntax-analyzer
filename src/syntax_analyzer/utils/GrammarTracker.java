@@ -1,14 +1,14 @@
 package syntax_analyzer.utils;
 
-import syntax_analyzer.Consumer;
+import syntax_analyzer.Variable;
 
 import java.util.*;
 
 import static java.lang.Math.min;
 
-public class GrammarTracker extends Stack<Consumer> {
+public class GrammarTracker extends Stack<Variable> {
     public int mostConsumed = 0;
-    public Stack<Consumer> bestStack;
+    public Stack<Variable> bestStack = new Stack<>();
 
     public void saveIfMax (int consumed) {
         if (mostConsumed < consumed) {
@@ -20,8 +20,9 @@ public class GrammarTracker extends Stack<Consumer> {
 
     public void report() {
         LinkedHashSet<String> set = new LinkedHashSet<>();
-
-        String suggest = bestStack.pop().toString();
+        String suggest = "";
+        if (!bestStack.isEmpty())
+            suggest = bestStack.pop().toString();
 
         while (!bestStack.empty() && set.size() <= 5) {
             set.add(bestStack.pop().toString());
