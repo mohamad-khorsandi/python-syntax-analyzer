@@ -16,7 +16,7 @@ public class Main {
         Files.walk(Paths.get("grammar_src")).filter(Files::isRegularFile).forEach((name) -> grammar.parseFile(name.toString()));
 
         String startingSymbol = "file";
-        String textFile = Utils.readFile("pyCode/python_code2", true);
+        String textFile = Utils.readFile("pyCode/python_code", true);
         textFile = textFile + " EOF";
         boolean res = evaluate(startingSymbol, textFile);
         if (! res) {
